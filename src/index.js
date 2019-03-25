@@ -2,7 +2,6 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
-const Filter = require('bad-words')
 
 const { generateMessage, generateLocationMessage } = require('../src/utils/messages')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('../src/utils/users')
@@ -16,7 +15,6 @@ const publicDirectoryPath = path.join(__dirname, '../public')
 
 app.use(express.static(publicDirectoryPath))
 
-const filter = new Filter()
 
 io.on('connection', (socket) => {
     // socket.emit                      ->  sends event to new connections.
@@ -47,10 +45,6 @@ io.on('connection', (socket) => {
         const user = getUser(socket.id)
         if (!user) {
             return callback('You do not have a user profile')
-        }
-
-        if (filter.isProfane(message)){
-            return callback('Profanity is not allowed')    
         }
 
         io.to(user.room).emit('message', generateMessage(user.username, message))
