@@ -4,11 +4,20 @@
   "description": "A chat application to learn socket.io",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "env-cmd src/confi/dev.env nodemon src/index.js",
+    "test": "env-cmd src/config/test.env jest --watch --runInBand"
   },
   "author": "Dustin Neighly",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "env-cmd": "^8.0.2",
+    "jest": "^24.5.0",
+    "nodemon": "^1.18.10",
+    "supertest": "^4.0.2"
   }
 }
