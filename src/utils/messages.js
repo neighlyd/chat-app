@@ -1,6 +1,10 @@
 const moment = require('moment')
+const linkifyHtml = require('linkifyjs/html')
 
-const generateMessage = (username, text) => {
+const generateMessage = (username, message) => {
+    const text = linkifyHtml(message, {
+        defaultProtocol: 'https'
+    })
     return {
         username,
         text,
