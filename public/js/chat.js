@@ -106,6 +106,10 @@ $shareLocationButton.addEventListener('click', () => {
     })
 })
 
+const logout = () => {
+    location.href = '/'
+}
+
 socket.emit('join', { username, room }, (error) => {
     if (error) {
         alert(error)

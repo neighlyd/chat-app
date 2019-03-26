@@ -10,14 +10,35 @@
         <div class="centered-form">
             <div class="centered-form__box">
                 <h1>Join</h1>
-                <form autocomplete="off" action="/chat.html">
+                <form autocomplete="off" id="login-form">
                     <label>Display Name</label>
                     <input type="text" name="username" placeholder="Display Name" required>
                     <label>Room</label>
-                    <input type="text" name="room" placeholder="Room" required>
+                    <select id="room-select" name="existingRoom">
+                    </select>
+                    <input type="text" name="newRoom" id="room" placeholder="Create New Room">
                     <button>Join</button>
+                    <div id="room-warning"></div>
                 </form>
             </div>
         </div>
+
+        <script id="selection-template" type="text/html">
+            <option value="">--Existing Rooms---</option>
+            {{#rooms}}
+                <option value={{.}}>{{.}}</option>
+            {{/rooms}}
+        </script>
+
+        <script id="room-select-warning-template" type="text/html">
+            <div>
+                <p>You must select an existing room or create a new one.</p>
+            </div>
+        </script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.6.0/qs.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="js/index.js"></script>
     </body>
 </html>
