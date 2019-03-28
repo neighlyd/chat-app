@@ -10,6 +10,8 @@ The rooms also have a linkify app running that will dynamically add link tags to
 
 Each chatroom contains a sidebar that has the name of the chatroom and a list of the users. This information is updated dynamically as users enter and leave the room.
 
+The chatroom can be reached at https://neighly-chat-app.herokuapp.com
+
 ## Future Expansions
 
 My goal is to integrate the chat app into other apps that I have created, such as the [Task App](https://github.com/neighlyd/node-todo-api), [Expensify App](https://github.com/neighlyd/expensify-app), and a Weather App.
