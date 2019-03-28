@@ -1,25 +1,33 @@
-<!DOCTYPE html>
+:<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Chat App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css">
         <link rel="icon" href="img/favicon.png">
-        <link rel="stylesheet" href="css/styles.css">
+        <script src="main.js"></script>
     </head>
-
+    
     <body>
         <div class="centered-form">
             <div class="centered-form__box">
-                <h1>Join</h1>
-                <form autocomplete="off" id="login-form">
-                    <label>Display Name</label>
-                    <input type="text" name="username" placeholder="Display Name" required>
-                    <label>Room</label>
-                    <select id="room-select" name="existingRoom">
-                    </select>
-                    <input type="text" name="newRoom" id="room" placeholder="Create New Room">
-                    <button>Join</button>
-                    <div id="room-warning"></div>
-                </form>
+                <div class="centered-form__box__header">
+                    <h1>Join</h1>
+                </div>
+                <div class="centered-form__box__content">
+                    <form autocomplete="off" id="login-form">
+                        <label>Display Name</label>
+                        <input type="text" name="username" placeholder="Display Name" required>
+                        <label>Room</label>
+                        <select id="room-select" name="existingRoom">
+                        </select>
+                        <input type="text" name="newRoom" id="room" placeholder="Create New Room">
+                        <button>Join</button>
+                        <div id="room-warning"></div>
+                    </form>
+                </div>
             </div>
         </div>
 

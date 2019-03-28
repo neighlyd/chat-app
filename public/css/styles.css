@@ -28,7 +28,7 @@ label {
     display: block;
     font-size: 14px;
     margin-bottom: 8px;
-    color: #777;
+    color: #F5F4F2;
 }
 
 input {
@@ -40,7 +40,7 @@ input {
 button {
     cursor: pointer;
     padding: 12px;
-    background: #7C5CBF;
+    background: #60851b;
     border: none;
     color: white;
     font-size: 16px;
@@ -48,30 +48,39 @@ button {
 }
 
 button:hover {
-    background: #6b47b8;
+    background: #4e6b15;
 }
 
 button:disabled {
     cursor: default;
-    background: #7c5cbf94;
+    background: #7CA321;
 }
 
 /* Join Page Styles */
 
 .centered-form {
-    background: #333744;
+    background: #F5F4F2;
     width: 100vw;
     height: 100vh;   
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 }
 
 .centered-form__box {
     box-shadow: 0px 0px 17px 1px #1D1F26;
-    background: #F7F7FA;
-    padding: 24px;
+    background: #7CA321;
     width: 250px;
+}
+
+.centered-form__box__header {
+    background: #60851b;
+    color: #F5F4F2;
+    text-align: center;
+}
+
+.centered-form__box__content {
+    padding: 0px 24px 24px;
 }
 
 .centered-form button {
@@ -103,6 +112,7 @@ button:disabled {
 
 .chat {
     display: flex;
+    background: #F5F4F2;
 }
 
 .chat__sidebar {
