@@ -12,6 +12,7 @@ const addUser = ({ id, username, room }) => {
     // Clean the data
     username = username.trim().toLowerCase()
     room = room.trim().toLowerCase()
+    loc = {}
     
     // Check for unique username
     const existingUser = users.find((user) => {
@@ -26,7 +27,7 @@ const addUser = ({ id, username, room }) => {
     }
 
     // Store user
-    const user = {id, username, room}  
+    const user = {id, username, room, loc}  
     users.push(user)
     return { user }
 }
@@ -44,6 +45,22 @@ const getUser = (id) => {
     
 }
 
+const getUserLoc = (id) => {
+    const index = users.findIndex((user) => user.id === id)
+
+    if (index > -1) {
+        return users[index].loc
+    }
+}
+
+const updateUserLoc = (id, loc) => {
+    const index = users.findIndex((user) => user.id === id)
+    
+    if (index > -1){
+        users[index].loc = loc
+    }
+}
+
 const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room.trim().toLowerCase())
 }
@@ -57,5 +74,7 @@ module.exports = {
     removeUser,
     getUser,
     getUsersInRoom,
-    getRoomList
+    getRoomList,
+    getUserLoc,
+    updateUserLoc
 }

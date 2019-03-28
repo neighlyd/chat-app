@@ -2,15 +2,17 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
+const moment = require('moment')
 
 const { generateMessage, generateLocationMessage } = require('../src/utils/messages')
-const { addUser, removeUser, getUser, getUsersInRoom, getRoomList } = require('../src/utils/users')
+const { addUser, removeUser, getUser, getUsersInRoom, getRoomList, getUserLoc, updateUserLoc } = require('../src/utils/users')
+const { getWeather } = require('../src/utils/weather')
 
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT
 const publicDirectoryPath = path.join(__dirname, '../public')
 
 app.use(express.static(publicDirectoryPath))
@@ -34,7 +36,7 @@ io.on('connection', (socket) => {
 
         socket.join(user.room)
 
-        socket.emit('message', generateMessage('Admin', 'Welcome to the Server'))
+        socket.emit('message', generateMessage('Admin', 'Welcome to the Server!<br/>To see a list of commands send :help'))
         
         // Let everyone in the waiting room update the room list.
         socket.broadcast.emit('roomList', getRoomList())
@@ -53,7 +55,33 @@ io.on('connection', (socket) => {
             return callback('You do not have a user profile')
         }
 
-        io.to(user.room).emit('message', generateMessage(user.username, message))
+        if(message.startsWith(':')){
+            const messageQuery = message.slice(1).split(' ')
+            switch(messageQuery[0]){
+                case 'time':
+                    const time = moment().format('MMM Do YYYY, hh:mm:ss a')
+                    io.to(socket.id).emit('message', generateMessage('Admin', `Server time is now: ${time}`))
+                    break
+                case 'weather':
+                    const loc = getUserLoc(socket.id)
+                    if(Object.entries(loc).length === 0 && loc.constructor === Object){
+                        io.to(socket.id).emit('message', generateMessage('Admin', 'You must share your location before we can give you the weather forecast.'))   
+                    } else {
+                        getWeather(loc, (res) => {
+                            io.to(socket.id).emit('message', generateMessage('Admin', res))
+                        })                        
+                    }
+                    break
+                case 'help':
+                    const helpMessage = ('The following commands are available:' +
+                                        '<br />:time - returns the current date and time of the server' +
+                                        '<br />:weather - returns the current weather and forecast for your region (note: you must share your location first to access this feature)')
+                    io.to(socket.id).emit('message', generateMessage('Admin', helpMessage))
+                    break
+            }
+        } else {
+            io.to(user.room).emit('message', generateMessage(user.username, message))
+        }
         callback()
     })
 
@@ -62,7 +90,7 @@ io.on('connection', (socket) => {
         if (!user) {
             return callback('You do not have a user profile')
         }
-
+        updateUserLoc(socket.id, coords)
         io.to(user.room).emit('locationMessage', generateLocationMessage(user.username, `https://google.com/maps?q=${coords.lat},${coords.long}`))
         callback()
     })
