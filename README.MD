@@ -12,6 +12,20 @@ Each chatroom contains a sidebar that has the name of the chatroom and a list of
 
 The chatroom can be reached at https://neighly-chat-app.herokuapp.com
 
+## Commands
+
+The server has built-in commands to help the users.
+
+These commands are accessed by typing `:` and then the command before sending it to the server.
+
+The currently available commands are:
+
+```
+:help - returns a brief description of all available commands
+:time - returns the local time of the server
+:weather - returns a forecast for your area. Be aware that you need to share your location with the chatroom first (this is public. TODO: make sharing location optionally private)
+```
+
 ## Future Expansions
 
 My goal is to integrate the chat app into other apps that I have created, such as the [Task App](https://github.com/neighlyd/node-todo-api), [Expensify App](https://github.com/neighlyd/expensify-app), and a Weather App.
