@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
 
         socket.join(user.room)
 
-        socket.emit('message', generateMessage('Admin', 'Welcome to the Server!<br/>To see a list of commands send :help'))
+        socket.emit('message', generateMessage('Admin', 'Welcome to the Server!<br/>To see a list of commands send /help'))
         
         // Let everyone in the waiting room update the room list.
         socket.broadcast.emit('roomList', getRoomList())
@@ -60,22 +60,21 @@ io.on('connection', (socket) => {
         // set default sender as user
         let sender = user.username
 
-        if(message.startsWith(':')){
+        if(message.startsWith('/')){
             
-            const messageQuery = message.slice(1).trim().toLowerCase().split(' ')
-            const command = messageQuery[0]
+            const messageQuery = message.slice(1).trim().split(' ')
             // change recipient to self for majority of commands.
             recipient = user.id
             // change default sender to 'Admin' for majority of commands.
             sender = 'Admin'
             
-            switch(command){
+            switch(messageQuery[0]){
                 case 'help':
                     message = ('The following commands are available:<br />' +
-                                        '<code>:time</code> - returns the current date and time of the server<br/>' +
-                                        '<code>:weather</code> - returns the current weather and forecast for your region (note: you must share your location first to access this feature)<br/>' +
-                                        '<code>:pm &lt;user&gt; &lt;message&gt;</code> - send a private message to another user (same as <code>:pm</code>)<br/>' + 
-                                        '<code>:dm &lt;user&gt; &lt;message&gt;</code> - send a private message to another user (same as <code>:pm</code>)')
+                                        '<code>/time</code> - returns the current date and time of the server<br/>' +
+                                        '<code>/weather</code> - returns the current weather and forecast for your region (note: you must share your location first to access this feature)<br/>' +
+                                        '<code>/pm &lt;user&gt; &lt;message&gt;</code> - send a private message to another user (same as <code>:pm</code>)<br/>' + 
+                                        '<code>/dm &lt;user&gt; &lt;message&gt;</code> - send a private message to another user (same as <code>:pm</code>)')
                     break
                 case 'time':
                     if (validateLoc(user)){
@@ -96,7 +95,7 @@ io.on('connection', (socket) => {
                     if (messageQuery.length < 3){
                         message = 'You must specify both a user and a message to send.<br/>Use the format <code>:message user_name message</code> to send your message'
                     } else {
-                        recipient = getUserByNameAndRoom(messageQuery[1], user.room)
+                        recipient = getUserByNameAndRoom(messageQuery[1].toLowerCase(), user.room)
                         if (!recipient) {
                             recipient = user.id
                             message = 'I\'m sorry, but I could not find that user.'

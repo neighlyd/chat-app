@@ -48,6 +48,7 @@ socket.on('message', (message) => {
         message: message.text,
         time: message.createdAt
     })
+    console.log(html)
     $messages.insertAdjacentHTML('beforeend', html)
     autoscroll()
 })
