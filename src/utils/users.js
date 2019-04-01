@@ -1,6 +1,22 @@
 const users = []
+const tzlookup = require('tz-lookup')
 
 const addUser = ({ id, username, room }) => {
+    /*
+    user = {
+        id: Number,
+        username: String.toLowerCase(),
+        room: String.toLowerCase(),
+        loc: {
+            lat: Number,
+            long: Number,
+            tz: String
+        }
+    }
+
+    By default, loc is a blank object. It is filled by the updateUserLoc() function when a user shares their location.
+    id is the user's socket.id provided by socket.io.
+    */
     
     // Validate the data
     if (!username || !room) {
@@ -12,7 +28,7 @@ const addUser = ({ id, username, room }) => {
     // Clean the data
     username = username.trim().toLowerCase()
     room = room.trim().toLowerCase()
-    loc = {}
+    let loc = {}
     
     // Check for unique username
     const existingUser = users.find((user) => {
@@ -40,21 +56,25 @@ const removeUser = (id) => {
     }
 }
 
-const getUser = (id) => {
-    return users.find((user) => user.id === id)
-    
+const getUserById = (id) => {
+    return users.find((user) => user.id === id)    
 }
 
-const getUserLoc = (id) => {
-    const index = users.findIndex((user) => user.id === id)
+const getUserByNameAndRoom = (name, room) => {
+    return users.find((user) => user.username === name && user.room === room)
+}
 
-    if (index > -1) {
-        return users[index].loc
+const validateLoc = (user) => {
+    if (Object.entries(user.loc).length === 0){
+        return false
     }
+    return true
 }
 
 const updateUserLoc = (id, loc) => {
     const index = users.findIndex((user) => user.id === id)
+    // add timezone to location object
+    loc.tz = tzlookup(loc.lat, loc.long)
     
     if (index > -1){
         users[index].loc = loc
@@ -72,9 +92,10 @@ const getRoomList = () => {
 module.exports = {
     addUser,
     removeUser,
-    getUser,
+    getUserById,
     getUsersInRoom,
     getRoomList,
-    getUserLoc,
-    updateUserLoc
+    updateUserLoc,
+    validateLoc,
+    getUserByNameAndRoom
 }

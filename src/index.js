@@ -2,11 +2,12 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
-const moment = require('moment')
 
-const { generateMessage, generateLocationMessage } = require('../src/utils/messages')
-const { addUser, removeUser, getUser, getUsersInRoom, getRoomList, getUserLoc, updateUserLoc } = require('../src/utils/users')
-const { getWeather } = require('../src/utils/weather')
+
+const { generateMessage, generateLocationMessage } = require('./utils/messages')
+const { addUser, removeUser, getUserById, getUserByNameAndRoom, getUsersInRoom, getRoomList, validateLoc, updateUserLoc } = require('./utils/users')
+const { getWeather } = require('./utils/weather')
+const { getTime } = require('./utils/time')
 
 const app = express()
 const server = http.createServer(app)
@@ -49,44 +50,77 @@ io.on('connection', (socket) => {
         callback()
     })
 
-    socket.on('sendMessage', (message, callback) => {
-        const user = getUser(socket.id)
+    socket.on('sendMessage', async (message, callback) => {
+        const user = getUserById(socket.id)
         if (!user) {
             return callback('You do not have a user profile')
         }
+        // set default recipient to full room.
+        let recipient = user.room
+        // set default sender as user
+        let sender = user.username
 
         if(message.startsWith(':')){
-            const messageQuery = message.slice(1).split(' ')
-            switch(messageQuery[0]){
-                case 'time':
-                    const time = moment().format('MMM Do YYYY, hh:mm:ss a')
-                    io.to(socket.id).emit('message', generateMessage('Admin', `Server time is now: ${time}`))
+            
+            const messageQuery = message.slice(1).trim().toLowerCase().split(' ')
+            const command = messageQuery[0]
+            // change recipient to self for majority of commands.
+            recipient = user.id
+            // change default sender to 'Admin' for majority of commands.
+            sender = 'Admin'
+            
+            switch(command){
+                case 'help':
+                    message = ('The following commands are available:<br />' +
+                                        '<code>:time</code> - returns the current date and time of the server<br/>' +
+                                        '<code>:weather</code> - returns the current weather and forecast for your region (note: you must share your location first to access this feature)<br/>' +
+                                        '<code>:pm &lt;user&gt; &lt;message&gt;</code> - send a private message to another user (same as <code>:pm</code>)<br/>' + 
+                                        '<code>:dm &lt;user&gt; &lt;message&gt;</code> - send a private message to another user (same as <code>:pm</code>)')
                     break
-                case 'weather':
-                    const loc = getUserLoc(socket.id)
-                    if(Object.entries(loc).length === 0 && loc.constructor === Object){
-                        io.to(socket.id).emit('message', generateMessage('Admin', 'You must share your location before we can give you the weather forecast.'))   
+                case 'time':
+                    if (validateLoc(user)){
+                        message = await getTime(user)
                     } else {
-                        getWeather(loc, (res) => {
-                            io.to(socket.id).emit('message', generateMessage('Admin', res))
-                        })                        
+                        message = 'You must share your location before you can use this feature.'
                     }
                     break
-                case 'help':
-                    const helpMessage = ('The following commands are available:' +
-                                        '<br />:time - returns the current date and time of the server' +
-                                        '<br />:weather - returns the current weather and forecast for your region (note: you must share your location first to access this feature)')
-                    io.to(socket.id).emit('message', generateMessage('Admin', helpMessage))
+                case 'weather': 
+                    if (validateLoc(user)) {
+                        message = await getWeather(user)
+                    } else {
+                        message = 'You must share your location before you can use this feature.'
+                    }
                     break
+                case 'dm':
+                case 'pm':
+                    if (messageQuery.length < 3){
+                        message = 'You must specify both a user and a message to send.<br/>Use the format <code>:message user_name message</code> to send your message'
+                    } else {
+                        recipient = getUserByNameAndRoom(messageQuery[1], user.room)
+                        if (!recipient) {
+                            recipient = user.id
+                            message = 'I\'m sorry, but I could not find that user.'
+                        } else if (recipient.id === user.id){
+                            recipient = user.id
+                            message = 'Please stop talking to yourself. It\'s rather quite untoward.'
+                        } else {
+                            // the recipient of the PM was found. Set them as the receiver and reset the sender as the original user instead of admin (as is default in the switch block)
+                            recipient = recipient.id
+                            sender = user.username
+                            message = messageQuery.slice(2).join(' ')
+                        }
+                    }
+                    break
+                default:
+                    message = 'That is not a valid command'
             }
-        } else {
-            io.to(user.room).emit('message', generateMessage(user.username, message))
         }
+        io.to(recipient).emit('message', generateMessage(sender, message))
         callback()
     })
 
     socket.on('shareLocation', (coords, callback) => {
-        const user = getUser(socket.id)
+        const user = getUserById(socket.id)
         if (!user) {
             return callback('You do not have a user profile')
         }
