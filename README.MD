@@ -10,7 +10,7 @@ The rooms also have a linkify app running that will dynamically add link tags to
 
 Each chatroom contains a sidebar that has the name of the chatroom and a list of the users. This information is updated dynamically as users enter and leave the room.
 
-The chatroom can be reached at https://neighly-chat-app.herokuapp.com
+A demo of the chatroom app can be reached at https://neighly-chat-app.herokuapp.com
 
 ## Commands
 
@@ -32,7 +32,31 @@ The currently available commands are:
 ><code>/pm <user> <message></code> - same as <code>/dm</code>
 
 
-## Future Expansions
+# Installation
+
+If you want to install your own version of the chat app locally please follow these instructions. 
+
+## Requirements
+The following software is required to run the chat app.
+* `git`
+* `node`
+
+## Installation and Usage
+To install and run locally:
+
+```bash
+$ git clone git://github.com/neighlyd/chat-app
+$ cd chat-app
+$ npm install
+$ npm run dev 
+```
+This will launch the chat app at `localhost:3000/`
+
+---------
+If you wish to deploy the app remotely to heroku, I recommend viewing their (Getting Started on Heroku with Node.js tutorial)[https://devcenter.heroku.com/articles/getting-started-with-nodejs].
+    
+
+# Future Expansions
 
 My goal is to integrate the chat app into other apps that I have created, such as the [Task App](https://github.com/neighlyd/node-todo-api), [Expensify App](https://github.com/neighlyd/expensify-app).
 
